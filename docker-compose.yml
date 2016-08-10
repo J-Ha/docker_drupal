@@ -1,0 +1,55 @@
+###################################
+#        Basic Services           #
+#        for Development          #
+#                                 #
+#    Do not use for Production!   #
+#                                 #
+#       Mediengruppe KLAMBT       #
+#            TimWeyand            # 
+#                                 #
+###################################
+version: '2'
+services:
+  drupal_memcached:
+    image: memcached:alpine
+    container_name: drupal_memcached
+  drupal_solr:
+    image: solr:alpine
+    container_name: drupal_solr
+    ports:
+      - "8983:8983"
+  drupal_database:
+    image: mysql:5.7
+    container_name: drupal_database
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=drupal8
+      - MYSQL_USER=drupal8
+      - MYSQL_PASSWORD=drupal8
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: drupal_phpmyadmin
+    ports:
+      - "81:80"    
+    links:
+      - drupal_database      
+  webserver:
+    image: klambt/docker_drupal:latest
+    container_name: docker_drupal
+    links:
+      - drupal_memcached
+      - drupal_solr
+      - drupal_database
+  drupal_varnish:
+    image: million12/varnish:latest
+    container_name: drupal_varnish
+    environment:
+      - VCL_CONFIG=/var/www/private/varnish.vcl        
+    volumes_from:
+      - webserver:ro
+    links: 
+      - webserver
+    ports:
+      - "80:80"      
