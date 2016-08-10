@@ -3,9 +3,7 @@ MAINTAINER Tim Weyand <tim.weyand@klambt.de>
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y drush \
-    && pecl install uploadprogress \
-    && docker-php-ext-enable uploadprogress
+    && apt-get install -y drush
  
 # Download Drupal
 ENV DRUPAL_VERSION 8.1.8
