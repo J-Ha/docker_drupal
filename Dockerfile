@@ -1,4 +1,4 @@
-FROM klambt/webserver
+FROM klambt/webserver:latest
 MAINTAINER Tim Weyand <tim.weyand@klambt.de>
 
 RUN apt-get update \
@@ -15,4 +15,11 @@ RUN curl -fSL "http://ftp.drupal.org/files/projects/drupal-${DRUPAL_VERSION}.tar
 	&& rm drupal.tar.gz \
 	&& chown -R www-data:www-data sites
 
+
+
+
+COPY script/setup.sh /usr/local/bin/setup.sh
+RUN chmod +x /usr/local/bin/setup.sh; ls -la /usr/local/bin/
+
 # @todo customization
+CMD /usr/local/bin/setup.sh
