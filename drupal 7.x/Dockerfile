@@ -1,4 +1,4 @@
-FROM klambt/docker_webserver
+FROM klambt/webserver
 MAINTAINER Tim Weyand <tim.weyand@klambt.de>
 
 RUN apt-get update \
