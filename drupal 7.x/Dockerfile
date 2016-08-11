@@ -3,15 +3,18 @@ MAINTAINER Tim Weyand <tim.weyand@klambt.de>
 
 RUN apt-get update \
     && apt-get upgrade -y \
-    && apt-get install -y drush
+    && apt-get install -y mysql-client \
+    && php -r "readfile('https://s3.amazonaws.com/files.drush.org/drush.phar');" > /root/drush
+    && php /root/drush core-status
+    && chmod +x /root/drush
+    && sudo mv /root/drush /usr/local/bin
+    && drush init
+    && drush pm-download --destination=/var/www/html \
+    && dir=`ls -l /var/www/html | awk '{print $9}' | grep 'drupal-'` \
+    && mv $dir/* . \ 
+    && chown -R www-data:www-data /var/www/html
 
-# https://www.drupal.org/node/3060/release
-ENV DRUPAL_VERSION 7.50
-ENV DRUPAL_MD5 f23905b0248d76f0fc8316692cd64753
 
-RUN curl -fSL "http://ftp.drupal.org/files/projects/drupal-${DRUPAL_VERSION}.tar.gz" -o drupal.tar.gz \
-	&& echo "${DRUPAL_MD5} *drupal.tar.gz" | md5sum -c - \
-	&& tar -xz --strip-components=1 -f drupal.tar.gz \
-	&& rm drupal.tar.gz \
-	&& chown -R www-data:www-data sites
+# drush site-install --db-url=mysql://root:root@drupal_database/drupal7 -y
+
 
